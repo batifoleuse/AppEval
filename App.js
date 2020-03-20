@@ -7,9 +7,21 @@
  */
 
 import React, {Component} from 'react';
-import {SectionList, StyleSheet, Text, View} from 'react-native';
+import {
+  SectionList,
+  StyleSheet,
+  FlatList,
+  Keyboard,
+  SafeAreaView,
+  TouchableOpacity,
+  Text,
+  View,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
-import {evalApp} from './app';
+import {evalApply} from './app';
+import styles from './styles';
+import DetailContactScreen from './src/component/detailContactScreen';
 
 export default class AppCall extends Component {
   state = {
@@ -17,48 +29,41 @@ export default class AppCall extends Component {
   };
   constructor(props) {
     super(props);
-    this.state.listContact = evalApp;
+    this.state.listContact = evalApply;
   }
 
   render() {
     return (
-      <View style={styles.container}>
-        <SectionList
-          sections={[
-            {title: 'D', data: ['Devin', 'Dan', 'Dominic']},
-            {
-              title: 'J',
-              data: ['Jackson', 'John', 'Julie'],
-            },
-          ]}
-          renderItem={({item}) => <Text style={styles.item}>{item}</Text>}
-          renderSectionHeader={({section}) => (
-            <Text style={styles.sectionHeader}>{section.title}</Text>
-          )}
-          keyExtractor={(item, index) => index}
-        />
-      </View>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={{flex: 1}}>
+        <SafeAreaView style={{flex: 1}}>
+          <View>
+            <FlatList
+              data={this.state.listContact}
+              renderItem={({item}) => (
+                <TouchableOpacity
+                  key={'evalApply_' + item.id}
+                  style={''}
+                  onPress={() => {
+                    this.props.navigation.push('DetailContact', {
+                      evalApp: item,
+                    });
+                  }}>
+                  <View style={styles.container}>
+                    <Text style={{flex: 1, fontWeight: 'bold'}}>
+                      {item.lastName}
+                    </Text>
+                    <Text style={{flex: 1}}>{item.firstName}</Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 22,
-  },
-  sectionHeader: {
-    paddingTop: 2,
-    paddingLeft: 10,
-    paddingRight: 10,
-    paddingBottom: 2,
-    fontSize: 14,
-    fontWeight: 'bold',
-    backgroundColor: 'rgba(247,247,247,1.0)',
-  },
-  item: {
-    padding: 10,
-    fontSize: 18,
-    height: 44,
-  },
-});
+function DetailContact({navigation, route}) {
+  return <DetailContactScreen navigation={navigation} route={route} />;
+}
